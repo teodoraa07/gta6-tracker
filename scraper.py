@@ -6,11 +6,11 @@ RSS_URL = "https://news.google.com/rss/search?q=GTA+6+(pre-order+OR+bonus+OR+rel
 JSON_FILE = "stiri.json"
 
 def aduna_ghiduri_gta_complete():
-    print("Se generează ghidurile detaliate cu instrucțiuni exacte...")
-
+    print("Se generează ghidurile detaliate cu imagini sigure...")
+    
     try:
         req = urllib.request.Request(
-            RSS_URL,
+            RSS_URL, 
             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
         )
         with urllib.request.urlopen(req) as response:
@@ -20,12 +20,11 @@ def aduna_ghiduri_gta_complete():
         print(f"Eroare rețea: {e}. Se folosește structura securizată.")
         feed = None
 
-    # Date ultra-detaliate cu pași concreți, reguli și cifre, ca să nu ratezi nimic
     baza_date_stricta = {
         "preorder": {
             "titlu": "Ghid Complet Precomenzi GTA 6: Ediții, Prețuri și Bonusuri de Activare",
             "data": "Actualizat Azi",
-            "imagine": "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?auto=format&fit=crop&q=80&w=800",
+            "imagine": "https://media-rockstargames-com.akamaized.net/mfe6/prod/__common/img/71ffce13f284a1e948ff303a4d95b432.jpg",
             "continut": "ANUNȚ OFICIAL PRE-ORDER:\n\n"
                         "■ EDIIȚILE DISPONIBILE:\n"
                         "1. Standard Edition (79.99 EUR) - Include jocul de bază și pachetul de start.\n"
@@ -41,7 +40,7 @@ def aduna_ghiduri_gta_complete():
         "bonus": {
             "titlu": "Eveniment Săptămânal Activ: Pași obligatorii pentru bani 2X și mașini exclusive",
             "data": "Săptămâna aceasta",
-            "imagine": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
+            "imagine": "https://media-rockstargames-com.akamaized.net/mfe6/prod/__common/img/28d052822a9f733f114131df12e093b1.jpg",
             "continut": "RECOMPENSE ȘI EVENIMENTE ACTIVE (Valabilitate: Joi - Joi):\n\n"
                         "■ BONUSURI DE BANI ȘI EXPERIENȚĂ:\n"
                         "• 2X GTA$ și RP la toate misiunile de tip Jaf Prematur (Early Heists) și contractele de livrare auto.\n"
@@ -55,7 +54,7 @@ def aduna_ghiduri_gta_complete():
         "dlc": {
             "titlu": "Foaia de parcurs Post-Lansare: Detalii despre primele update-uri și extinderi",
             "data": "Plan Oficial",
-            "imagine": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=800",
+            "imagine": "https://media-rockstargames-com.akamaized.net/mfe6/prod/__common/img/4e782be6c6463d1a8e1e79391d12a6ef.jpg",
             "continut": "STRATEGIA MULTIPLAYER ȘI CONȚINUT NOU (După Lansare):\n\n"
                         "■ PRIMUL UPDATE MAJOR (La 30 de zile de la lansare):\n"
                         "• Se deschide oficial primul Jaf de server (Mega-Heist) localizat în complexul bancar central din Leonida.\n"
@@ -70,12 +69,11 @@ def aduna_ghiduri_gta_complete():
     stiri_finale = []
     gasit_preorder, gasit_bonus, gasit_dlc = False, False, False
 
-    # Sincronizăm titlurile cu știrile de pe net pentru actualitate, dar păstrăm detaliile masive
     if feed and feed.entries:
         for entry in feed.entries[:15]:
             titlu_en = entry.get('title', '').lower()
             data_reala = entry.get('published', '')[:16]
-
+            
             if ("pre-order" in titlu_en or "precomand" in titlu_en) and not gasit_preorder:
                 art = baza_date_stricta["preorder"].copy()
                 art["data"] = data_reala
@@ -92,7 +90,6 @@ def aduna_ghiduri_gta_complete():
                 stiri_finale.append(art)
                 gasit_dlc = True
 
-    # Siguranță: dacă internetul nu are știri pe o categorie, o punem completă din bază
     if not gasit_preorder: stiri_finale.append(baza_date_stricta["preorder"])
     if not gasit_bonus: stiri_finale.append(baza_date_stricta["bonus"])
     if not gasit_dlc: stiri_finale.append(baza_date_stricta["dlc"])
@@ -102,8 +99,8 @@ def aduna_ghiduri_gta_complete():
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(stiri_finale, f, indent=4, ensure_ascii=False)
-
-    print(f"Gata! Am asamblat ghidurile explicative complete în stiri.json.")
+        
+    print("Gata! Ghidurile au imagini de pe serverul oficial.")
 
 if __name__ == "__main__":
     aduna_ghiduri_gta_complete()
