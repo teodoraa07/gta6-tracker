@@ -3,18 +3,18 @@ import json
 import urllib.request
 import re
 
-# Căutăm pe Google News cele mai noi articole oficiale și știri despre GTA 6
 RSS_URL = "https://news.google.com/rss/search?q=GTA+6+Rockstar+Games&hl=ro&gl=RO&ceid=RO:ro"
 JSON_FILE = "stiri.json"
 
 def curata_textul(text_html):
-    # Funcție care șterge etichetele HTML din rezumatul știrii ca să rămână text curat
+    # Șterge etichetele HTML și curăță spațiile
     text_curat = re.sub(r'<[^>]+>', '', text_html)
+    # Elimină numele sursei de la final dacă apare în paranteze (ex: "(Playtech)")
+    text_curat = re.sub(r'\s*\(.*?\)\s*$', '', text_curat)
     return text_curat.strip()
 
-def aduna_stiri_reale_gta():
-    print("Se adună știrile 100% reale de pe Google News...")
-    
+def aduna_stiri_detaliate_reale():
+    print("Se adună știrile reale cu detalii importante...")
     try:
         req = urllib.request.Request(
             RSS_URL, 
@@ -24,46 +24,51 @@ def aduna_stiri_reale_gta():
             html_content = response.read()
         feed = feedparser.parse(html_content)
     except Exception as e:
-        print(f"Eroare la conectare: {e}")
+        print(f"Eroare: {e}")
         return
 
     stiri_finale = []
 
     if feed and feed.entries:
-        # Luăm primele 3 cele mai recente știri reale găsite
+        # Luăm cele mai recente 3 știri din presă
         for i, entry in enumerate(feed.entries[:3]):
-            titlu_real = entry.get('title', 'Noutăți GTA VI')
-            data_reala = entry.get('published', 'Recent')[:16] # Păstrăm doar data și ora
+            titlu_complet = entry.get('title', 'Actualizare GTA VI')
+            data_reala = entry.get('published', 'Recent')[:16]
+            link_real = entry.get('link', 'https://news.google.com')
             
-            # Luăm descrierea oferită de Google News și o curățăm
-            rezumat_real = entry.get('summary', '')
-            text_suport = curata_textul(rezumat_real)
-            
-            if not text_suport or len(text_suport) < 10:
-                text_suport = "Apasă pe linkul oficial sau vizitează comunitatea pentru a citi întregul articol publicat în presă."
+            # Extragem rezumatul brut și îl curățăm
+            rezumat_brut = entry.get('summary', '')
+            detaliu_scurt = curata_textul(rezumat_brut)
+
+            # Spargem titlul ca să aflăm publicația (Google News pune mereu "Titlu - Publicație")
+            sursa = "Presa de Gaming"
+            titlu_curat = titlu_complet
+            if " - " in titlu_complet:
+                parti = titlu_complet.rsplit(" - ", 1)
+                titlu_curat = parti[0]
+                sursa = parti[1]
+
+            # Construim un bloc de detalii importante pe baza datelor reale transmise de flux
+            continut_detaliat = (
+                f"■ DETALII ACTUALE DIN PRESĂ:\n"
+                f"• Subiect principal: {titlu_curat}\n"
+                f"• Sumar informație: {detaliu_scurt}\n\n"
+                f"■ SURSA ȘI CONTEXT:\n"
+                f"Articolul a fost monitorizat live via Google News din secțiunea oficială Rockstar Games. "
+                f"Informația completă a fost redactată de către jurnaliștii de la {sursa}."
+            )
 
             stiri_finale.append({
-                "id": f"stire-reala-{i}",
-                "titlu": titlu_real,
+                "id": f"stire-detaliata-{i}",
+                "titlu": titlu_curat,
                 "data": data_reala,
-                "imagine": "", # Nu mai avem nevoie de linkuri de poze, index.html folosește bannerele neon
-                "continut": f"{text_suport}\n\nSursa: Google News Tracker"
+                "link": link_real,
+                "continut": continut_detaliat
             })
-
-    # Dacă fluxul e gol din motive de rețea, punem o notificare reală
-    if not stiri_finale:
-        stiri_finale.append({
-            "id": "stire-reala-0",
-            "titlu": "Se așteaptă noi comunicate de la Rockstar Games",
-            "data": "Astăzi",
-            "imagine": "",
-            "continut": "Momentan nu au fost publicate articole noi în ultimele ore. Verifică din nou mai târziu pentru actualizări live."
-        })
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(stiri_finale, f, indent=4, ensure_ascii=False)
-        
-    print("Gata! Fișierul stiri.json conține acum doar informații reale din presă.")
+    print("Gata! Fișierul stiri.json conține acum detalii structurate.")
 
 if __name__ == "__main__":
-    aduna_stiri_reale_gta()
+    aduna_stiri_detaliate_reale()
