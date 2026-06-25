@@ -3,109 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA VI - Noutăți și Evenimente Directe</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>GTA VI - Noutăți și Evenimente</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent-color: #ffb300;
+            --text-color: #c5c6c7;
+            --text-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--card-bg);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--text-white);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header h1 span {
+            color: var(--accent-color);
+        }
+
+        .stiri-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .stire-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .stire-card:hover {
+            transform: translateY(-5s);
+        }
+
+        /* Banner vizual în loc de imagine externă */
+        .stire-banner {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #121212 0%, #2c1654 50%, #ff007f 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .stire-banner::before {
+            content: "GTA VI";
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.05);
+            position: absolute;
+            letter-spacing: 5px;
+        }
+
+        .banner-text {
+            color: var(--text-white);
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 1;
+            border: 2px solid var(--accent-color);
+            padding: 5px 15px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .stire-continut {
+            padding: 25px;
+        }
+
+        .stire-data {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .stire-titlu {
+            color: var(--text-white);
+            font-size: 1.6rem;
+            margin: 0 0 15px 0;
+            line-height: 1.3;
+        }
+
+        .stire-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+    </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans">
+<body>
 
-<!-- HEADER INTERACTIV -->
-<header class="border-b border-zinc-800 bg-zinc-900/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h1 class="text-2xl font-black tracking-wider text-amber-500 uppercase">GTA VI <span class="text-white text-sm font-normal tracking-normal block sm:inline sm:ml-2">Hub Oficial</span></h1>
-        <div class="bg-zinc-950 border border-zinc-800 px-4 py-2 rounded-lg text-amber-400 font-mono font-bold text-sm shadow-inner">
-            Lansare: <span id="countdown">146z : 18h : 16m : 30s</span>
-        </div>
-    </div>
-</header>
+    <div class="container">
+        <header>
+            <h1><span>GTA VI</span> Hub Oficial Informații</h1>
+            <p>Toate actualizările și ghidurile importante direct de pe serverul tău.</p>
+        </header>
 
-<!-- ZONA DE CONȚINUT -->
-<main class="max-w-6xl mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h2 class="text-3xl font-extrabold tracking-tight mb-2">Evenimente și Noutăți Majore</h2>
-        <p class="text-zinc-400 text-sm">Toate actualizările importante pot fi citite integral direct pe această pagină.</p>
+        <main class="stiri-grid" id="stiri-container">
+            <!-- Știrile se vor încărca automat aici prin JavaScript -->
+        </main>
     </div>
 
-    <div id="container-stiri" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Știrile generate din Python vor fi plasate automat aici -->
-    </div>
-</main>
+    <script>
+        async function incarcaStiri() {
+            const container = document.getElementById('stiri-container');
+            try {
+                // Încărcăm fișierul stiri.json local sau de pe GitHub Pages
+                const response = await fetch('stiri.json');
+                if (!response.ok) throw new Error('Nu s-a putut încărca fișierul JSON');
+                
+                const stiri = await response.json();
+                container.innerHTML = '';
 
-<!-- FEREASTRĂ MODALĂ (POP-UP DIRECT PE SITE) -->
-<div id="fereastra-citire" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden justify-center items-center z-50 p-4 animate-fade-in">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl">
-        <button onclick="inchideArticol()" class="absolute top-4 right-4 bg-zinc-800 hover:bg-amber-500 hover:text-black text-white font-bold h-8 w-8 rounded-full text-xs flex items-center justify-center transition-colors cursor-pointer">✕</button>
-        <img id="modal-imagine" src="" class="w-full h-56 object-cover rounded-lg mb-4 border border-zinc-800">
-        <span id="modal-data" class="text-xs text-amber-500 font-mono"></span>
-        <h3 id="modal-titlu" class="text-2xl font-black my-3 text-zinc-100 leading-tight"></h3>
-        <p id="modal-continut" class="text-zinc-300 leading-relaxed text-base border-t border-zinc-800 pt-4 whitespace-pre-line"></p>
-    </div>
-</div>
+                stiri.forEach(stire => {
+                    const card = document.createElement('article');
+                    card.className = 'stire-card';
 
-<script>
-    let stiriLocale = [];
+                    // Generăm o etichetă scurtă pentru banner în funcție de ID sau conținut
+                    let eticheta = "NEWS";
+                    if(stire.id.includes('0')) eticheta = "PRE-ORDER";
+                    if(stire.id.includes('1')) eticheta = "EVENT BONUS";
+                    if(stire.id.includes('2')) eticheta = "DLC / UPDATE";
 
-    function pornesteCountdown() {
-        // Sincronizare perfectă cu timpul tău rămas
-        const acum = new Date().getTime();
-        const timpRamas = (146 * 24 * 60 * 60 * 1000) + (18 * 60 * 60 * 1000) + (16 * 60 * 1000) + (30 * 1000);
-        const dataTinta = acum + timpRamas;
-
-        setInterval(() => {
-            const distanta = dataTinta - new Date().getTime();
-            const zile = Math.floor(distanta / (1000 * 60 * 60 * 24));
-            const ore = Math.floor((distanta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minute = Math.floor((distanta % (1000 * 60 * 60)) / (1000 * 60));
-            const secunde = Math.floor((distanta % (1000 * 60)) / 1000);
-            document.getElementById("countdown").innerHTML = `${zile}z : ${ore.toString().padStart(2, '0')}h : ${minute.toString().padStart(2, '0')}m : ${secunde.toString().padStart(2, '0')}s`;
-        }, 1000);
-    }
-
-    async function afiseazaStiriPeEcran() {
-        try {
-            const raspuns = await fetch('stiri.json?v=' + new Date().getTime());
-            stiriLocale = await raspuns.json();
-            const container = document.getElementById('container-stiri');
-            container.innerHTML = '';
-
-            stiriLocale.forEach(articol => {
-                const card = document.createElement('div');
-                card.className = "bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-amber-500/40 transition-all duration-300 flex flex-col group shadow-lg";
-                card.innerHTML = `
-                        <div class="h-44 overflow-hidden bg-zinc-800">
-                            <img src="${articol.imagine}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300">
+                    card.innerHTML = `
+                        <div class="stire-banner">
+                            <div class="banner-text">${eticheta}</div>
                         </div>
-                        <div class="p-5 flex flex-col flex-grow">
-                            <span class="text-xs text-zinc-500 mb-2 font-mono">${articol.data}</span>
-                            <h3 class="text-base font-bold mb-4 text-zinc-100 group-hover:text-amber-400 transition-colors line-clamp-2">${articol.titlu}</h3>
-                            <button onclick="deschideArticol('${articol.id}')" class="w-full text-center bg-zinc-800 hover:bg-amber-500 hover:text-black font-bold text-xs py-2.5 px-4 rounded-lg transition-colors mt-auto cursor-pointer">
-                                Citește noutatea pe site
-                            </button>
+                        <div class="stire-continut">
+                            <div class="stire-data">${stire.data}</div>
+                            <h2 class="stire-titlu">${stire.titlu}</h2>
+                            <p class="stire-text">${stire.continut}</p>
                         </div>
                     `;
-                container.appendChild(card);
-            });
-        } catch (e) {
-            document.getElementById('container-stiri').innerHTML = '<div class="text-zinc-500 col-span-full text-center py-8">Eroare la încărcarea articolelor.</div>';
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<p style="color: red; text-align: center;">Eroare la încărcarea datelor. Asigură-te că stiri.json există.</p>`;
+            }
         }
-    }
 
-    function deschideArticol(idArticol) {
-        const articol = stiriLocale.find(a => a.id === idArticol);
-        if(articol) {
-            document.getElementById('modal-imagine').src = articol.imagine;
-            document.getElementById('modal-data').innerText = articol.data;
-            document.getElementById('modal-titlu').innerText = articol.titlu;
-            document.getElementById('modal-continut').innerText = articol.continut;
-            document.getElementById('fereastra-citire').style.display = 'flex';
-        }
-    }
-
-    function inchideArticol() {
-        document.getElementById('fereastra-citire').style.display = 'none';
-    }
-
-    pornesteCountdown();
-    afiseazaStiriPeEcran();
-</script>
+        // Pornim funcția când se încarcă pagina
+        window.addEventListener('DOMContentLoaded', incarcaStiri);
+    </script>
 </body>
 </html>
