@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA VI - Noutăți și Evenimente</title>
+    <title>GTA VI - Noutăți și Evenimente Reale</title>
     <style>
         :root {
             --bg-color: #0b0c10;
@@ -57,16 +57,17 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .stire-card:hover {
-            transform: translateY(-5s);
+            transform: translateY(-3px);
         }
 
-        /* Banner vizual în loc de imagine externă */
         .stire-banner {
             width: 100%;
-            height: 200px;
+            height: 150px;
             background: linear-gradient(135deg, #121212 0%, #2c1654 50%, #ff007f 100%);
             display: flex;
             align-items: center;
@@ -75,30 +76,23 @@
             border-bottom: 3px solid var(--accent-color);
         }
 
-        .stire-banner::before {
-            content: "GTA VI";
-            font-size: 4rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.05);
-            position: absolute;
-            letter-spacing: 5px;
-        }
-
         .banner-text {
             color: var(--text-white);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: bold;
             letter-spacing: 3px;
             text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 1;
             border: 2px solid var(--accent-color);
             padding: 5px 15px;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
         }
 
         .stire-continut {
             padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .stire-data {
@@ -110,7 +104,7 @@
 
         .stire-titlu {
             color: var(--text-white);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             margin: 0 0 15px 0;
             line-height: 1.3;
         }
@@ -118,7 +112,28 @@
         .stire-text {
             font-size: 1rem;
             line-height: 1.6;
+            margin-bottom: 20px;
             white-space: pre-line;
+            flex-grow: 1;
+        }
+
+        .btn-citeste {
+            display: inline-block;
+            align-self: flex-start;
+            background-color: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-citeste:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
         }
     </style>
 </head>
@@ -126,12 +141,12 @@
 
     <div class="container">
         <header>
-            <h1><span>GTA VI</span> Hub Oficial Informații</h1>
-            <p>Toate actualizările și ghidurile importante direct de pe serverul tău.</p>
+            <h1><span>GTA VI</span> Tracker Știri Reale</h1>
+            <p>Toate actualizările și detaliile importante preluate live din presa internațională.</p>
         </header>
 
         <main class="stiri-grid" id="stiri-container">
-            <!-- Știrile se vor încărca automat aici prin JavaScript -->
+            <!-- Știrile se vor încărca din stiri.json -->
         </main>
     </div>
 
@@ -139,7 +154,6 @@
         async function incarcaStiri() {
             const container = document.getElementById('stiri-container');
             try {
-                // Încărcăm fișierul stiri.json local sau de pe GitHub Pages
                 const response = await fetch('stiri.json');
                 if (!response.ok) throw new Error('Nu s-a putut încărca fișierul JSON');
                 
@@ -150,31 +164,28 @@
                     const card = document.createElement('article');
                     card.className = 'stire-card';
 
-                    // Generăm o etichetă scurtă pentru banner în funcție de ID sau conținut
-                    let eticheta = "NEWS";
-                    if(stire.id.includes('0')) eticheta = "PRE-ORDER";
-                    if(stire.id.includes('1')) eticheta = "EVENT BONUS";
-                    if(stire.id.includes('2')) eticheta = "DLC / UPDATE";
+                    // Curățăm textul dacă conține repetat sintagma simplă text de "Citește mai mult"
+                    let continutCurat = stire.continut.replace("Citește mai mult", "").replace("Read more", "");
 
                     card.innerHTML = `
                         <div class="stire-banner">
-                            <div class="banner-text">${eticheta}</div>
+                            <div class="banner-text">CONȚINUT ACTUAL</div>
                         </div>
                         <div class="stire-continut">
                             <div class="stire-data">${stire.data}</div>
                             <h2 class="stire-titlu">${stire.titlu}</h2>
-                            <p class="stire-text">${stire.continut}</p>
+                            <p class="stire-text">${continutCurat}</p>
+                            <a href="${stire.link}" target="_blank" class="btn-citeste">Citește tot articolul cu detalii</a>
                         </div>
                     `;
                     container.appendChild(card);
                 });
             } catch (error) {
                 console.error(error);
-                container.innerHTML = `<p style="color: red; text-align: center;">Eroare la încărcarea datelor. Asigură-te că stiri.json există.</p>`;
+                container.innerHTML = `<p style="color: red; text-align: center;">Se încarcă datele noi... Te rugăm să dai refresh (F5) în câteva momente.</p>`;
             }
         }
 
-        // Pornim funcția când se încarcă pagina
         window.addEventListener('DOMContentLoaded', incarcaStiri);
     </script>
 </body>
